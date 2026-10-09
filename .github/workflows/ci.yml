@@ -1,0 +1,26 @@
+name: ci
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (fails unless BUILD_OK exists)
+        run: test -f BUILD_OK || { echo "Error: build failed in src/app.test.ts:12, expected 1 but received 2"; exit 1; }
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo lint ok
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: E2E (fails when FAIL_E2E exists)
+        run: test ! -f FAIL_E2E || { echo "Error: e2e failed in e2e/login.spec.ts:7, timeout waiting for #submit"; exit 1; }
